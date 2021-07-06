@@ -15,6 +15,12 @@ document.querySelector('#logout-link').addEventListener('click', logoutUser);
 
 document.querySelector('.add-project-btn').addEventListener('click', submitProject);
 
+function getUserProjects(user) {
+  http.get(`http://localhost:8000/api/user/${user.id}/fetch/projects`)
+    .then(data => ui.displayProjects(data))
+    .catch(err => console.log(err));
+}
+
 function setCurrentState(){
 
   if(localStorage.getItem('user') === null){
@@ -28,6 +34,8 @@ function setCurrentState(){
 
   } else {
     localStorage.setItem('state', 'loggedIn');
+    const user = JSON.parse(localStorage.getItem('user'));
+    getUserProjects(user);
   }
 
 }
@@ -54,7 +62,8 @@ function addUser(e) {
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
     } else {
-      ui.showAlert('Successful', 'alert alert-success');
+      ui.showAlert(data.message, 'alert alert-success');
+      ui.changeViewState('login');
     }
     console.log(data);
   })
@@ -77,15 +86,16 @@ function loginUser(e){
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
     } else {
-      ui.showAlert('Successful', 'alert alert-success');
+      ui.showAlert(data.message, 'alert alert-success');
+      storeLoggedUser(data.user);
+      getUserProjects(data.user);
     }
-    storeLoggedUser(data.user);
-    console.log(data);
   })
   .catch(err => console.log(err));
 
   e.preventDefault();
 }
+
 
 function storeLoggedUser(user){
   
@@ -113,7 +123,7 @@ function submitProject(){
   const data = {
     projectName,
     projectUrl,
-    userName: user.name
+    userID: user.id
   }
 
   http.post('http://localhost:8000/api/submit/project', data)
@@ -121,7 +131,9 @@ function submitProject(){
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
     } else {
-      ui.showAlert('Successful', 'alert alert-success');
+      ui.showAlert(data.message, 'alert alert-success');
+      ui.clearSubmitProjectFields();
+      getUserProjects(user);
     }
     
   })
@@ -135,11 +147,13 @@ function enableLogin(e) {
 
 function enableSignup(e) {
   ui.changeViewState('signup');
+  ui.initiateState();
   e.preventDefault();
 }
 
 function logoutUser(e){
   removeUser();
   ui.changeViewState('login');
+  ui.initiateState();
   e.preventDefault();
 }
