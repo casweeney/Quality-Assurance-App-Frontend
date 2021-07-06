@@ -19,12 +19,15 @@
       <ul class="navbar-nav ml-auto">
         <li class="nav-item"><a id="login-link" class="nav-link" href="#">Login</a></li>
         <li class="nav-item"><a style="display: none;" id="signup-link" class="nav-link" href="#">Create account</a></li>
+        <li class="nav-item"><a style="display: none;" id="logout-link" class="nav-link" href="#">Logout</a></li>
       </ul>
     </div>
   </nav>
 
   <div class="container viewContainer">
     <div class="card card-body card-form">
+
+      <!-- Signup Holder -->
       <div class="signup-holder">
         <h1>Create an Account</h1>
         <p class="lead">Provide quality assurance on projects</p>
@@ -56,6 +59,7 @@
         <button class="add-account btn btn-primary btn-block">Add Account</button>
       </div>
 
+      <!-- Login Holder -->
       <div class="login-holder" style="display: none;">
         <h1>Signin</h1>
         <p class="lead">Provide quality assurance on projects</p>
@@ -70,12 +74,38 @@
         <input type="hidden" id="id" value="">
         <button class="login btn btn-primary btn-block">Login</button>
       </div>
+
+      <div class="add-project" style="display: none;">
+        <h1>Submit a new project for QA</h1>
+        <p class="lead">Fill the form below with project details for Quality Assurance Review.</p>
+
+        <div class="row">
+          <div class="col-md-5">
+            <input type="text" id="project-name" class="form-control" placeholder="Project name">
+          </div>
+
+          <div class="col-md-5">
+            <input type="text" id="project-url" class="form-control" placeholder="Project URL">
+          </div>
+
+          <div class="col-md-2">
+            <button class="add-project-btn btn btn-primary btn-block">Submit</button>
+          </div>
+        </div>
+        
+      </div>
     </div>
     <br>
 
-    <div id="projects">
+    <div id="qa">
       
     </div>
+
+    <div id="dev">
+
+    </div>
+
+
   </div>
 
   <footer class="mt-5 p-3 text-center bg-light">

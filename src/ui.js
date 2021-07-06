@@ -6,9 +6,45 @@ class UI {
         this.role = document.querySelector('#role');
         this.accessCode = document.querySelector('#access-code');
         this.addAccountBtn = document.querySelector('.add-account');
-        this.viewState = 'signup';
         this.loginLink = document.querySelector('#login-link');
         this.signupLink = document.querySelector('#signup-link');
+        this.logoutLink = document.querySelector('#logout-link');
+    }
+
+    initiateState(){
+        const currentState = localStorage.getItem('state');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if(currentState === 'login'){
+            document.querySelector('.add-project').style.display = 'none';
+            this.logoutLink.style.display = 'none';
+            document.querySelector('.signup-holder').style.display = 'none';
+            this.loginLink.style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'block';
+            this.signupLink.style.display = 'inline';
+        } else if(currentState === 'signup') {
+            document.querySelector('.add-project').style.display = 'none';
+            this.logoutLink.style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            this.signupLink.style.display = 'none';
+            document.querySelector('.signup-holder').style.display = 'block';
+            this.loginLink.style.display = 'inline';
+        } else if(currentState === 'loggedIn' && user.role === 'developer') {
+            document.querySelector('.signup-holder').style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            this.loginLink.style.display = 'none';
+            this.signupLink.style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            document.querySelector('.signup-holder').style.display = 'none';
+            this.signupLink.style.display = 'none';
+            this.loginLink.style.display = 'none';
+
+            document.querySelector('.add-project').style.display = 'block';
+            this.logoutLink.style.display = 'inline';
+        } else if(currentState === 'loggedIn' && user.role === 'qa_person') {
+            
+        }
+
     }
 
     showAlert(msg, alertClass) {
@@ -35,17 +71,14 @@ class UI {
     }
 
     changeViewState(newState) {
-        if(newState === 'login') {
-            document.querySelector('.signup-holder').style.display = 'none';
-            document.querySelector('.login-holder').style.display = 'block';
-            this.loginLink.style.display = 'none';
-            this.signupLink.style.display = 'inline';
+        if(localStorage.getItem('state') === null){
+            localStorage.setItem('state', newState);
         } else {
-            document.querySelector('.login-holder').style.display = 'none';
-            document.querySelector('.signup-holder').style.display = 'block';
-            this.signupLink.style.display = 'none';
-            this.loginLink.style.display = 'inline';
+            localStorage.removeItem('state');
+            localStorage.setItem('state', newState);
         }
+
+        this.initiateState();
     }
 }
 
