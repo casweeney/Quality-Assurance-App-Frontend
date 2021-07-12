@@ -15,9 +15,18 @@ document.querySelector('#logout-link').addEventListener('click', logoutUser);
 
 document.querySelector('.add-project-btn').addEventListener('click', submitProject);
 
+document.querySelector('.dev-projects').addEventListener('click', expandDevItem);
+document.querySelector('.qa-projects').addEventListener('click', expandQaItem);
+
 function getUserProjects(user) {
   http.get(`http://localhost:8000/api/user/${user.id}/fetch/projects`)
-    .then(data => ui.displayProjects(data))
+    .then(data => ui.displayUserProjects(data))
+    .catch(err => console.log(err));
+}
+
+function getAllProjects() {
+  http.get(`http://localhost:8000/api/fetch/all/projects`)
+    .then(data => ui.displayQaProjects(data))
     .catch(err => console.log(err));
 }
 
@@ -36,6 +45,7 @@ function setCurrentState(){
     localStorage.setItem('state', 'loggedIn');
     const user = JSON.parse(localStorage.getItem('user'));
     getUserProjects(user);
+    getAllProjects();
   }
 
 }
@@ -85,10 +95,16 @@ function loginUser(e){
   .then(data => {
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
+      console.log(data);
     } else {
       ui.showAlert(data.message, 'alert alert-success');
       storeLoggedUser(data.user);
-      getUserProjects(data.user);
+      if(data.user.role === 'developer') {
+        getUserProjects(data.user);
+      } else {
+        getAllProjects();
+      }
+      console.log(data);
     }
   })
   .catch(err => console.log(err));
@@ -138,6 +154,31 @@ function submitProject(){
     
   })
   .catch(err => console.log(err));
+}
+
+function getProjectDetails(id) {
+  http.get(`http://localhost:8000/api/fetch/project/${id}/details`)
+    .then(data => {
+      console.log(data);
+    })
+    .catch(err => console.log(err));
+}
+
+function expandDevItem(e) {
+  if(e.target.parentElement.classList.contains('qa-item')){
+    console.log(e.target.parentElement.id);
+  }
+
+  e.preventDefault();
+}
+
+function expandQaItem(e) {
+  if(e.target.parentElement.classList.contains('qa-item')){
+    const projectID = e.target.parentElement.id;
+    getProjectDetails(projectID);
+  }
+
+  e.preventDefault();
 }
 
 function enableLogin(e) {

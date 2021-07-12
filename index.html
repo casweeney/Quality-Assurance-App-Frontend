@@ -27,6 +27,42 @@
   <div class="container viewContainer">
     <div class="card card-body card-form">
 
+      <div class="qa-action" style="display: none;">
+        <div class="card card-body project-detail">
+          <h3 class="project-titele">Ejemen</h3>
+          <p class="project-url">https://github.com/</p>
+          <p class="project-status">Pending</p>
+          <div class="row">
+            <div class="col-md-2">
+              <a class="btn btn-success">Mark as passed</a>
+              <a class="btn btn-warning">Keep pending</a>
+            </div>
+          </div>
+        </div>
+        <br>
+
+        <h3>Submit QA</h3>
+        <p class="lead">Fill the form below with project Quality Assurance Review.</p>
+
+        <div class="row">
+          <div class="col-md-4">
+            <input type="text" id="qa-url" class="form-control" placeholder="QA URL">
+          </div>
+
+          <div class="col-md-3">
+            <textarea style="resize: none;" id="qa-comment" class="form-control" placeholder="QA Comment"></textarea>
+          </div>
+
+          <div class="col-md-3">
+            <input type="file" id="qa-media" class="form-control" placeholder="QA Media">
+          </div>
+
+          <div class="col-md-2">
+            <button class="submit-qa-btn btn btn-primary btn-block">Submit</button>
+          </div>
+        </div>
+      </div>
+
       <!-- Signup Holder -->
       <div class="signup-holder">
         <h1>Create an Account</h1>
@@ -97,8 +133,20 @@
     </div>
     <br>
 
-    <div id="qa">
-      
+    <div id="qa" style="display: none;">
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <th>Project name</th>
+            <th>URL</th>
+            <th>QA status</th>
+            <th>Action</th>
+          </thead>
+          <tbody class="qa-projects">
+
+          </tbody>
+        </table>
+      </div>
     </div>
 
     <div id="dev" style="display: none;">
