@@ -54,7 +54,7 @@ class UI {
         let output = '';
         projects.projects.forEach(project => {
             output += `
-                <tr>
+                <tr id="${project.id}">
                     <td>${project.project_name}</td>
                     <td>${project.project_url}</td>
                     <td>${project.status}</td>
