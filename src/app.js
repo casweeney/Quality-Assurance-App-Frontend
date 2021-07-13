@@ -245,6 +245,7 @@ function enableSignup(e) {
 }
 
 function logoutUser(e){
+  document.querySelector('#welcomeText').textContent = '';
   localStorage.removeItem('actionState');
   localStorage.removeItem('currentProject');
   removeUser();

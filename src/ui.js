@@ -40,6 +40,7 @@ class UI {
             document.querySelector('.signup-holder').style.display = 'block';
             this.loginLink.style.display = 'inline';
         } else if(currentState === 'loggedIn' && user.role === 'developer' && localStorage.getItem('actionState') === null) {
+            document.querySelector('#welcomeText').textContent = `Howdy! ${user.name}, you are logged in as a ${user.role}.`;
             document.querySelector('.signup-holder').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
@@ -57,6 +58,7 @@ class UI {
             this.logoutLink.style.display = 'inline';
             document.querySelector('#dev').style.display = 'block';
         } else if(currentState === 'loggedIn' && user.role === 'qa_person' && localStorage.getItem('actionState') === null) {
+            document.querySelector('#welcomeText').textContent = `Howdy! ${user.name}, you are logged in as a ${user.role}.`;
             document.querySelector('.signup-holder').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
@@ -74,6 +76,7 @@ class UI {
             document.querySelector('#qa').style.display = 'block';
             this.logoutLink.style.display = 'inline';
         } else if (currentState === 'loggedIn' && user.role === 'qa_person' && localStorage.getItem('actionState') === 'qa-project-details') {
+            document.querySelector('#welcomeText').textContent = `Howdy! ${user.name}, you are logged in as a ${user.role}.`;
             document.querySelector('.signup-holder').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
@@ -93,6 +96,7 @@ class UI {
 
             this.displayProjectDetails();
         } else if (currentState === 'loggedIn' && user.role === 'developer' && localStorage.getItem('actionState') === 'dev-project-details') {
+            document.querySelector('#welcomeText').textContent = `Howdy! ${user.name}, you are logged in as a ${user.role}.`;
             document.querySelector('.signup-holder').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
