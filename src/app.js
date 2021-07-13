@@ -18,6 +18,10 @@ document.querySelector('.add-project-btn').addEventListener('click', submitProje
 document.querySelector('.dev-projects').addEventListener('click', expandDevItem);
 document.querySelector('.qa-projects').addEventListener('click', expandQaItem);
 
+document.querySelector('.backBtn').addEventListener('click', clearActionState);
+
+document.querySelector('.submit-qa-btn').addEventListener('click', submitProjectQA);
+
 function getUserProjects(user) {
   http.get(`http://localhost:8000/api/user/${user.id}/fetch/projects`)
     .then(data => ui.displayUserProjects(data))
@@ -127,6 +131,15 @@ function storeLoggedUser(user){
 
 }
 
+function clearActionState(e) {
+  localStorage.removeItem('actionState');
+  localStorage.removeItem('currentProject');
+
+  ui.initiateState();
+
+  e.preventDefault();
+}
+
 function removeUser(){
   localStorage.removeItem('user');
 }
@@ -156,18 +169,54 @@ function submitProject(){
   .catch(err => console.log(err));
 }
 
+function submitProjectQA() {
+  const user = JSON.parse(localStorage.getItem('user'));
+  const project = JSON.parse(localStorage.getItem('currentProject'));
+  const qaUrl = document.querySelector('#qa-url').value,
+        qaComment = document.querySelector('#qa-comment').value,
+        qaMedia = document.querySelector('#qa-media').value;
+
+  const data = {
+    userID: user.id,
+    projectID: project[0].id,
+    qaUrl,
+    qaComment,
+    qaMedia
+  }
+
+  http.post('http://localhost:8000/api/submit/qa', data)
+  .then(data => {
+    if(data.status === 'error'){
+      ui.showAlert(data.message, 'alert alert-danger');
+    } else {
+      document.querySelector('#qa-url').value = '';
+      document.querySelector('#qa-comment').value = '';
+      document.querySelector('#qa-media').value = '';
+      ui.showAlert(data.message, 'alert alert-success');
+      getProjectDetails(project[0].id);
+      ui.initiateState();
+    }
+    
+  })
+  .catch(err => console.log(err));
+
+}
+
 function getProjectDetails(id) {
   http.get(`http://localhost:8000/api/fetch/project/${id}/details`)
     .then(data => {
-      console.log(data);
+      localStorage.setItem('currentProject', JSON.stringify(data.project));
+      ui.addviewState('actionState', 'qa-project-details');
+      console.log(data.project);
     })
     .catch(err => console.log(err));
 }
 
 function expandDevItem(e) {
-  if(e.target.parentElement.classList.contains('qa-item')){
-    console.log(e.target.parentElement.id);
-  }
+  // if(e.target.parentElement.classList.contains('qa-item')){
+  //   const projectID = e.target.parentElement.id;
+  //   getProjectDetails(projectID);
+  // }
 
   e.preventDefault();
 }

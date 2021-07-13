@@ -21,7 +21,9 @@ class UI {
             this.logoutLink.style.display = 'none';
             document.querySelector('.signup-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
+            document.querySelector('.qa-action').style.display = 'none';
             document.querySelector('#qa').style.display = 'none';
+            document.querySelector('#project-qas').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'block';
             this.signupLink.style.display = 'inline';
         } else if(currentState === 'signup') {
@@ -31,6 +33,8 @@ class UI {
             document.querySelector('.login-holder').style.display = 'none';
             this.signupLink.style.display = 'none';
             document.querySelector('#qa').style.display = 'none';
+            document.querySelector('.qa-action').style.display = 'none';
+            document.querySelector('#project-qas').style.display = 'none';
             document.querySelector('.signup-holder').style.display = 'block';
             this.loginLink.style.display = 'inline';
         } else if(currentState === 'loggedIn' && user.role === 'developer') {
@@ -43,11 +47,29 @@ class UI {
             this.signupLink.style.display = 'none';
             this.loginLink.style.display = 'none';
             document.querySelector('#qa').style.display = 'none';
+            document.querySelector('.qa-action').style.display = 'none';
+            document.querySelector('#project-qas').style.display = 'none';
 
             document.querySelector('.add-project').style.display = 'block';
             this.logoutLink.style.display = 'inline';
             document.querySelector('#dev').style.display = 'block';
-        } else if(currentState === 'loggedIn' && user.role === 'qa_person') {
+        } else if(currentState === 'loggedIn' && user.role === 'qa_person' && localStorage.getItem('actionState') === null) {
+            document.querySelector('.signup-holder').style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            this.loginLink.style.display = 'none';
+            this.signupLink.style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            document.querySelector('.signup-holder').style.display = 'none';
+            this.signupLink.style.display = 'none';
+            this.loginLink.style.display = 'none';
+            document.querySelector('.add-project').style.display = 'none';
+            document.querySelector('#dev').style.display = 'none';
+            document.querySelector('.qa-action').style.display = 'none';
+            document.querySelector('#project-qas').style.display = 'none';
+
+            document.querySelector('#qa').style.display = 'block';
+            this.logoutLink.style.display = 'inline';
+        } else if (currentState === 'loggedIn' && user.role === 'qa_person' && localStorage.getItem('actionState') === 'qa-project-details') {
             document.querySelector('.signup-holder').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
@@ -59,8 +81,12 @@ class UI {
             document.querySelector('.add-project').style.display = 'none';
             document.querySelector('#dev').style.display = 'none';
 
-            document.querySelector('#qa').style.display = 'block';
+            document.querySelector('#qa').style.display = 'none';
             this.logoutLink.style.display = 'inline';
+            document.querySelector('.qa-action').style.display = 'block';
+            document.querySelector('#project-qas').style.display = 'block';
+
+            this.displayProjectDetails();
         }
 
     }
@@ -129,6 +155,36 @@ class UI {
         }
     }
 
+    displayProjectDetails() {
+        const project = JSON.parse(localStorage.getItem('currentProject'));
+        console.log(project);
+        document.querySelector('.project-title').textContent = project[0].project_name;
+        document.querySelector('.project-url').textContent = project[0].project_url;
+        document.querySelector('.project-status').textContent = project[0].status;
+
+        this.displayProjectQas(project);
+    }
+
+    displayProjectQas(project){
+        let output = '';
+
+        if(project[0].qas.length > 0) {
+            project[0].qas.forEach((qa) => {
+                output += `
+                    <tr class="project-qa" id="${qa.id}">
+                        <td>${qa.qa_url}</td>
+                        <td>${qa.qa_comment}</td>
+                        <td>${qa.qa_media}</td>
+                        <td>${qa.developer_comment}</td>
+                        <td>${qa.status}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.querySelector('.project-qas').innerHTML = output;
+    }
+
     changeViewState(newState) {
         if(localStorage.getItem('state') === null){
             localStorage.setItem('state', newState);
@@ -137,6 +193,12 @@ class UI {
             localStorage.setItem('state', newState);
         }
 
+        this.initiateState();
+    }
+
+    addviewState(state, value) {
+        localStorage.setItem(state, value);
+        this.displayProjectDetails();
         this.initiateState();
     }
 
