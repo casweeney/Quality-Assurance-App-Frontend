@@ -19,6 +19,7 @@ document.querySelector('.dev-projects').addEventListener('click', expandDevItem)
 document.querySelector('.qa-projects').addEventListener('click', expandQaItem);
 
 document.querySelector('.backBtn').addEventListener('click', clearActionState);
+document.querySelector('.devBackBtn').addEventListener('click', clearActionState);
 
 document.querySelector('.submit-qa-btn').addEventListener('click', submitProjectQA);
 
@@ -38,12 +39,7 @@ function setCurrentState(){
 
   if(localStorage.getItem('user') === null){
     
-    if(localStorage.getItem('state') === null){
-      localStorage.setItem('state', 'login');
-    } else {
-      localStorage.removeItem('state');
-      localStorage.setItem('state', 'login');
-    }
+    localStorage.setItem('state', 'login');
 
   } else {
     localStorage.setItem('state', 'loggedIn');
@@ -52,9 +48,9 @@ function setCurrentState(){
     getAllProjects();
   }
 
-}
+  ui.initiateState();
 
-ui.initiateState();
+}
 
 function addUser(e) {
   const name = document.querySelector('#name').value;
@@ -203,20 +199,27 @@ function submitProjectQA() {
 }
 
 function getProjectDetails(id) {
+  const user = JSON.parse(localStorage.getItem('user'));
   http.get(`http://localhost:8000/api/fetch/project/${id}/details`)
     .then(data => {
       localStorage.setItem('currentProject', JSON.stringify(data.project));
-      ui.addviewState('actionState', 'qa-project-details');
+
+      if(user.role === 'qa_person'){
+        ui.addviewState('actionState', 'qa-project-details');
+      } else {
+        ui.addviewState('actionState', 'dev-project-details');
+      }
+
       console.log(data.project);
     })
     .catch(err => console.log(err));
 }
 
 function expandDevItem(e) {
-  // if(e.target.parentElement.classList.contains('qa-item')){
-  //   const projectID = e.target.parentElement.id;
-  //   getProjectDetails(projectID);
-  // }
+  if(e.target.parentElement.classList.contains('qa-item')){
+    const projectID = e.target.parentElement.id;
+    getProjectDetails(projectID);
+  }
 
   e.preventDefault();
 }
@@ -242,6 +245,8 @@ function enableSignup(e) {
 }
 
 function logoutUser(e){
+  localStorage.removeItem('actionState');
+  localStorage.removeItem('currentProject');
   removeUser();
   ui.changeViewState('login');
   ui.initiateState();

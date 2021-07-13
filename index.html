@@ -34,8 +34,8 @@
           <p class="project-status">Pending</p>
           <div class="row">
             <div class="col-md-2">
-              <a class="btn btn-success">Mark as passed</a>
-              <a class="btn btn-warning">Keep pending</a>
+              <a class="btn passedBtn btn-success" style="display: none;">Mark as passed</a>
+              <a class="btn keepPendingBtn btn-warning" style="display: none;">Keep pending</a>
             </div>
 
             <div class="col-md-2">
@@ -65,6 +65,20 @@
             <button class="submit-qa-btn btn btn-primary btn-block">Submit</button>
           </div>
         </div>
+      </div>
+
+      <div class="dev-action" style="display: none;">
+        <div class="card card-body project-detail">
+          <h3 class="dev-project-title">Ejemen</h3>
+          <p class="dev-project-url">https://github.com/</p>
+          <p class="dev-project-status">Pending</p>
+          <div class="row">
+            <div class="col-md-2">
+              <a href="#" class="text-primary devBackBtn">Return Back</a>
+            </div>
+          </div>
+        </div>
+        <br>
       </div>
 
       <!-- Signup Holder -->
@@ -162,6 +176,7 @@
             <th>QA Media</th>
             <th>Developer Comment</th>
             <th>QA Status</th>
+            <th colspan="2">Action</th>
           </thead>
           <tbody class="project-qas">
 

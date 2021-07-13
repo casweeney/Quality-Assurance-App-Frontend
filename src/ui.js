@@ -24,6 +24,7 @@ class UI {
             document.querySelector('.qa-action').style.display = 'none';
             document.querySelector('#qa').style.display = 'none';
             document.querySelector('#project-qas').style.display = 'none';
+            document.querySelector('.dev-action').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'block';
             this.signupLink.style.display = 'inline';
         } else if(currentState === 'signup') {
@@ -35,9 +36,10 @@ class UI {
             document.querySelector('#qa').style.display = 'none';
             document.querySelector('.qa-action').style.display = 'none';
             document.querySelector('#project-qas').style.display = 'none';
+            document.querySelector('.dev-action').style.display = 'none';
             document.querySelector('.signup-holder').style.display = 'block';
             this.loginLink.style.display = 'inline';
-        } else if(currentState === 'loggedIn' && user.role === 'developer') {
+        } else if(currentState === 'loggedIn' && user.role === 'developer' && localStorage.getItem('actionState') === null) {
             document.querySelector('.signup-holder').style.display = 'none';
             document.querySelector('.login-holder').style.display = 'none';
             this.loginLink.style.display = 'none';
@@ -49,6 +51,7 @@ class UI {
             document.querySelector('#qa').style.display = 'none';
             document.querySelector('.qa-action').style.display = 'none';
             document.querySelector('#project-qas').style.display = 'none';
+            document.querySelector('.dev-action').style.display = 'none';
 
             document.querySelector('.add-project').style.display = 'block';
             this.logoutLink.style.display = 'inline';
@@ -66,6 +69,7 @@ class UI {
             document.querySelector('#dev').style.display = 'none';
             document.querySelector('.qa-action').style.display = 'none';
             document.querySelector('#project-qas').style.display = 'none';
+            document.querySelector('.dev-action').style.display = 'none';
 
             document.querySelector('#qa').style.display = 'block';
             this.logoutLink.style.display = 'inline';
@@ -80,10 +84,30 @@ class UI {
             this.loginLink.style.display = 'none';
             document.querySelector('.add-project').style.display = 'none';
             document.querySelector('#dev').style.display = 'none';
+            document.querySelector('.dev-action').style.display = 'none';
 
             document.querySelector('#qa').style.display = 'none';
             this.logoutLink.style.display = 'inline';
             document.querySelector('.qa-action').style.display = 'block';
+            document.querySelector('#project-qas').style.display = 'block';
+
+            this.displayProjectDetails();
+        } else if (currentState === 'loggedIn' && user.role === 'developer' && localStorage.getItem('actionState') === 'dev-project-details') {
+            document.querySelector('.signup-holder').style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            this.loginLink.style.display = 'none';
+            this.signupLink.style.display = 'none';
+            document.querySelector('.login-holder').style.display = 'none';
+            document.querySelector('.signup-holder').style.display = 'none';
+            this.signupLink.style.display = 'none';
+            this.loginLink.style.display = 'none';
+            document.querySelector('.add-project').style.display = 'none';
+            document.querySelector('#dev').style.display = 'none';
+
+            document.querySelector('#qa').style.display = 'none';
+            this.logoutLink.style.display = 'inline';
+            document.querySelector('.qa-action').style.display = 'none';
+            document.querySelector('.dev-action').style.display = 'block';
             document.querySelector('#project-qas').style.display = 'block';
 
             this.displayProjectDetails();
@@ -156,13 +180,57 @@ class UI {
     }
 
     displayProjectDetails() {
+        const user = JSON.parse(localStorage.getItem('user'));
         const project = JSON.parse(localStorage.getItem('currentProject'));
-        console.log(project);
-        document.querySelector('.project-title').textContent = project[0].project_name;
-        document.querySelector('.project-url').textContent = project[0].project_url;
-        document.querySelector('.project-status').textContent = project[0].status;
 
-        this.displayProjectQas(project);
+        if(user.role === 'qa_person'){
+            document.querySelector('.project-title').textContent = project[0].project_name;
+            document.querySelector('.project-url').textContent = project[0].project_url;
+            document.querySelector('.project-status').textContent = project[0].status;
+
+            if(project[0].status === 'pending') {
+                document.querySelector('.keepPendingBtn').style.display = 'none';
+                document.querySelector('.passedBtn').style.display = 'block';
+            } else {
+                document.querySelector('.keepPendingBtn').style.display = 'block';
+                document.querySelector('.passedBtn').style.display = 'none';
+            }
+
+            this.displayProjectQas(project);
+        } else {
+            document.querySelector('.dev-project-title').textContent = project[0].project_name;
+            document.querySelector('.dev-project-url').textContent = project[0].project_url;
+            document.querySelector('.dev-project-status').textContent = project[0].status;
+            this.displayProjectQasWithActionBtn(project);
+        }
+
+    }
+
+    displayProjectQasWithActionBtn(project) {
+        let output = '';
+
+        if(project[0].qas.length > 0) {
+            project[0].qas.forEach((qa) => {
+                output += `
+                    <tr class="project-qa" id="${qa.id}">
+                        <td>${qa.qa_url}</td>
+                        <td>${qa.qa_comment}</td>
+                        <td>${qa.qa_media}</td>
+                        <td>${qa.developer_comment}</td>
+                        <td>${qa.status}</td>
+                        <td>
+                            <textarea id="dev-qa-comment-${qa.id}" style="resize: none;" placeholder="Developer Comment" class="form-control"></textarea>
+                            <button class="btn btn-danger decline-btn decline-${qa.id}">Decline QA</button
+                        </td>
+                        <td>
+                            <button class="btn btn-success done-btn done-${qa.id}">Done</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        document.querySelector('.project-qas').innerHTML = output;
     }
 
     displayProjectQas(project){
@@ -177,6 +245,7 @@ class UI {
                         <td>${qa.qa_media}</td>
                         <td>${qa.developer_comment}</td>
                         <td>${qa.status}</td>
+                        <td></td>
                     </tr>
                 `;
             });
