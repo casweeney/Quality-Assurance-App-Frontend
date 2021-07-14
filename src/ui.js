@@ -223,8 +223,8 @@ class UI {
                         <td>${qa.developer_comment}</td>
                         <td>${qa.status}</td>
                         <td>
-                            <textarea id="dev-qa-comment-${qa.id}" style="resize: none;" placeholder="Developer Comment" class="form-control"></textarea>
-                            <button id="${qa.id}" class="btn btn-danger decline-btn">Decline QA</button
+                            <textarea cols="40" rows="3" id="dev-qa-comment-${qa.id}" style="resize: none;" placeholder="Developer Comment" class="form-control"></textarea>
+                            <button id="${qa.id}" class="btn btn-danger decline-btn mt-1">Decline QA</button
                         </td>
                         <td>
                             <button id="${qa.id}" class="btn btn-success done-btn">Done</button>
