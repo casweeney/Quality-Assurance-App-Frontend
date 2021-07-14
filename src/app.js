@@ -1,7 +1,7 @@
 import { http } from './http';
 import { ui } from './ui';
 
-const URI = 'http://localhost:8000/api';
+const URI = 'https://qa.createdright.com/api';
 
 document.addEventListener('DOMContentLoaded', setCurrentState);
 
