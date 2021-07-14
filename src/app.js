@@ -1,6 +1,8 @@
 import { http } from './http';
 import { ui } from './ui';
 
+const URI = 'http://localhost:8000/api';
+
 document.addEventListener('DOMContentLoaded', setCurrentState);
 
 document.querySelector('.add-account').addEventListener('click', addUser);
@@ -23,14 +25,19 @@ document.querySelector('.devBackBtn').addEventListener('click', clearActionState
 
 document.querySelector('.submit-qa-btn').addEventListener('click', submitProjectQA);
 
+document.querySelector('.project-qas').addEventListener('click', devAction);
+
+document.querySelector('.passedBtn').addEventListener('click', passProject);
+document.querySelector('.keepPendingBtn').addEventListener('click', keepPending);
+
 function getUserProjects(user) {
-  http.get(`http://localhost:8000/api/user/${user.id}/fetch/projects`)
+  http.get(`${URI}/user/${user.id}/fetch/projects`)
     .then(data => ui.displayUserProjects(data))
     .catch(err => console.log(err));
 }
 
 function getAllProjects() {
-  http.get(`http://localhost:8000/api/fetch/all/projects`)
+  http.get(`${URI}/fetch/all/projects`)
     .then(data => ui.displayQaProjects(data))
     .catch(err => console.log(err));
 }
@@ -67,7 +74,7 @@ function addUser(e) {
     accessCode
   }
 
-  http.post('http://localhost:8000/api/user/signup', data)
+  http.post(`${URI}/user/signup`, data)
   .then(data => {
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
@@ -75,7 +82,6 @@ function addUser(e) {
       ui.showAlert(data.message, 'alert alert-success');
       ui.changeViewState('login');
     }
-    console.log(data);
   })
   .catch(err => console.log(err));
 
@@ -91,11 +97,10 @@ function loginUser(e){
     password
   }
 
-  http.post('http://localhost:8000/api/user/signin', data)
+  http.post(`${URI}/user/signin`, data)
   .then(data => {
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
-      console.log(data);
     } else {
       ui.showAlert(data.message, 'alert alert-success');
       storeLoggedUser(data.user);
@@ -104,7 +109,6 @@ function loginUser(e){
       } else {
         getAllProjects();
       }
-      console.log(data);
     }
   })
   .catch(err => console.log(err));
@@ -131,6 +135,8 @@ function clearActionState(e) {
   localStorage.removeItem('actionState');
   localStorage.removeItem('currentProject');
 
+  location.reload();
+
   ui.initiateState();
 
   e.preventDefault();
@@ -151,7 +157,7 @@ function submitProject(){
     userID: user.id
   }
 
-  http.post('http://localhost:8000/api/submit/project', data)
+  http.post(`${URI}/submit/project`, data)
   .then(data => {
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
@@ -180,7 +186,7 @@ function submitProjectQA() {
     qaMedia
   }
 
-  http.post('http://localhost:8000/api/submit/qa', data)
+  http.post(`${URI}/submit/qa`, data)
   .then(data => {
     if(data.status === 'error'){
       ui.showAlert(data.message, 'alert alert-danger');
@@ -198,9 +204,47 @@ function submitProjectQA() {
 
 }
 
+function passProject(e) {
+  const project = JSON.parse(localStorage.getItem('currentProject'));
+  const projectID = project[0].id;
+
+  const data = {
+    status: 'passed'
+  }
+
+  http.put(`${URI}/update/project/${projectID}/status`, data)
+    .then(data => {
+      ui.showAlert(data.message, 'alert alert-success');
+      getProjectDetails(projectID);
+      ui.initiateState();
+    })
+    .catch(err => console.log(err));
+
+  e.preventDefault();
+}
+
+function keepPending(e) {
+  const project = JSON.parse(localStorage.getItem('currentProject'));
+  const projectID = project[0].id;
+
+  const data = {
+    status: 'pending'
+  }
+
+  http.put(`${URI}/update/project/${projectID}/status`, data)
+    .then(data => {
+      ui.showAlert(data.message, 'alert alert-success');
+      getProjectDetails(projectID);
+      ui.initiateState();
+    })
+    .catch(err => console.log(err));
+
+  e.preventDefault();
+}
+
 function getProjectDetails(id) {
   const user = JSON.parse(localStorage.getItem('user'));
-  http.get(`http://localhost:8000/api/fetch/project/${id}/details`)
+  http.get(`${URI}/fetch/project/${id}/details`)
     .then(data => {
       localStorage.setItem('currentProject', JSON.stringify(data.project));
 
@@ -209,10 +253,46 @@ function getProjectDetails(id) {
       } else {
         ui.addviewState('actionState', 'dev-project-details');
       }
-
-      console.log(data.project);
     })
     .catch(err => console.log(err));
+}
+
+function devAction(e) {
+  const project = JSON.parse(localStorage.getItem('currentProject'));
+
+  if(e.target.classList.contains('decline-btn')){
+    const qaID = e.target.id;
+    const devComment = document.querySelector(`#dev-qa-comment-${qaID}`).value;
+
+    const data = {
+      devComment,
+      status: 'Declined'
+    }
+
+    if(devComment !== '') {
+      http.put(`${URI}/add/dev/qa/${qaID}/comment`, data)
+        .then(data => {
+          getProjectDetails(project[0].id);
+          ui.initiateState();
+        })
+        .catch(err => console.log(err));
+    }
+  } else if(e.target.classList.contains('done-btn')) {
+    const qaID = e.target.id;
+    const data = {
+      devComment: 'QA fixes done',
+      status: 'Done'
+    }
+
+    http.put(`${URI}/add/dev/qa/${qaID}/comment`, data)
+        .then(data => {
+          getProjectDetails(project[0].id);
+          ui.initiateState();
+        })
+        .catch(err => console.log(err));
+  }
+
+  e.preventDefault();
 }
 
 function expandDevItem(e) {
