@@ -128,7 +128,7 @@ class UI {
                     <tr class="qa-item" id="${project.id}">
                         <td>${project.project_name}</td>
                         <td>${project.project_url}</td>
-                        <td>${project.status}</td>
+                        <td class="status-td">${project.status}</td>
                     </tr>
                 `;
             });
@@ -137,6 +137,7 @@ class UI {
         }
 
         document.querySelector('.dev-projects').innerHTML = output;
+        this.changeBackground();
     }
 
     displayQaProjects(projects) {
@@ -144,21 +145,25 @@ class UI {
 
         if(projects.projects.length > 0) {
             projects.projects.forEach(project => {
+
                 output += `
                     <tr class="qa-item" id="${project.id}">
                         <td>${project.project_name}</td>
                         <td>${project.project_url}</td>
-                        <td>${project.status}</td>
+                        <td class="status-td">${project.status}</td>
                         <td>QA</td>
                     </tr>
                 `;
+
             });
         }else {
             output = '';
         }
 
         document.querySelector('.qa-projects').innerHTML = output;
+        this.changeBackground();
     }
+
 
     showAlert(msg, alertClass) {
         const div = document.createElement('div');
@@ -189,7 +194,7 @@ class UI {
 
         if(user.role === 'qa_person'){
             document.querySelector('.project-title').textContent = project[0].project_name;
-            document.querySelector('.project-url').textContent = project[0].project_url;
+            document.querySelector('.project-url').innerHTML = `<a href="${project[0].project_url}" target="_blank">${project[0].project_url}</a>`;
             document.querySelector('.project-status').textContent = project[0].status;
 
             if(project[0].status === 'pending') {
@@ -203,7 +208,7 @@ class UI {
             this.displayProjectQas(project);
         } else {
             document.querySelector('.dev-project-title').textContent = project[0].project_name;
-            document.querySelector('.dev-project-url').textContent = project[0].project_url;
+            document.querySelector('.dev-project-url').innerHTML = `<a href="${project[0].project_url}" target="_blank">${project[0].project_url}</a>`;
             document.querySelector('.dev-project-status').textContent = project[0].status;
             this.displayProjectQasWithActionBtn(project);
         }
@@ -256,6 +261,7 @@ class UI {
         }
 
         document.querySelector('.project-qas').innerHTML = output;
+        
     }
 
     changeViewState(newState) {
@@ -278,6 +284,21 @@ class UI {
     clearSubmitProjectFields() {
         document.querySelector('#project-name').value = '';
         document.querySelector('#project-url').value = '';
+    }
+
+    changeBackground() {
+        const statusTds = document.querySelectorAll('.status-td');
+        statusTds.forEach((item) => {
+            item.parentElement.style.cursor = 'pointer';
+            if(item.innerHTML === 'pending') {
+                item.parentElement.style.backgroundColor = '#c30';
+                item.parentElement.style.color = 'white';
+            } else {
+                item.parentElement.style.backgroundColor = 'green';
+                item.parentElement.style.color = 'white';
+                item.parentElement.style.fontWeight = 'bold';
+            }
+        });
     }
 }
 
